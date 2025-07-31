@@ -1,1 +1,7 @@
 project_id = "dylctqimxhessygpqwze"
+
+[functions.get-trending-movies]
+verify_jwt = false
+
+[functions.get-entertainment-news]
+verify_jwt = false

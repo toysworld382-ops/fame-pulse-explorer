@@ -1,60 +1,42 @@
 import { MovieCard } from "./MovieCard";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, TrendingUp } from "lucide-react";
-import trendingMovies from "@/assets/trending-movies.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+
+interface Movie {
+  title: string;
+  year: string;
+  rating: number;
+  genre: string;
+  image: string;
+  language: string;
+}
 
 export const TrendingSection = () => {
-  // Mock data - in real app this would come from API
-  const trendingMovies_data = [
-    {
-      title: "Spider-Man: No Way Home",
-      year: "2021",
-      rating: 8.4,
-      genre: "Action",
-      image: trendingMovies,
-      language: "English"
-    },
-    {
-      title: "Avengers: Endgame",
-      year: "2019", 
-      rating: 8.4,
-      genre: "Action",
-      image: trendingMovies,
-      language: "English"
-    },
-    {
-      title: "Parasite",
-      year: "2019",
-      rating: 8.6,
-      genre: "Thriller",
-      image: trendingMovies,
-      language: "Korean"
-    },
-    {
-      title: "RRR",
-      year: "2022",
-      rating: 8.8,
-      genre: "Action",
-      image: trendingMovies,
-      language: "Telugu"
-    },
-    {
-      title: "Dangal",
-      year: "2016",
-      rating: 8.4,
-      genre: "Drama",
-      image: trendingMovies,
-      language: "Hindi"
-    },
-    {
-      title: "Squid Game",
-      year: "2021",
-      rating: 8.0,
-      genre: "Thriller",
-      image: trendingMovies,
-      language: "Korean"
-    }
-  ];
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTrendingMovies = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-trending-movies');
+        
+        if (error) {
+          console.error('Error fetching trending movies:', error);
+          return;
+        }
+        
+        setMovies(data.movies || []);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrendingMovies();
+  }, []);
 
   return (
     <section className="py-12 px-4">
@@ -78,17 +60,27 @@ export const TrendingSection = () => {
 
         {/* Movies Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {trendingMovies_data.map((movie, index) => (
-            <MovieCard
-              key={index}
-              title={movie.title}
-              year={movie.year}
-              rating={movie.rating}
-              genre={movie.genre}
-              image={movie.image}
-              language={movie.language}
-            />
-          ))}
+          {loading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-muted rounded-lg aspect-[2/3] mb-2"></div>
+                <div className="h-4 bg-muted rounded mb-1"></div>
+                <div className="h-3 bg-muted rounded w-2/3"></div>
+              </div>
+            ))
+          ) : (
+            movies.map((movie, index) => (
+              <MovieCard
+                key={index}
+                title={movie.title}
+                year={movie.year}
+                rating={movie.rating}
+                genre={movie.genre}
+                image={movie.image}
+                language={movie.language}
+              />
+            ))
+          )}
         </div>
       </div>
     </section>
