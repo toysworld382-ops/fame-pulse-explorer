@@ -114,7 +114,7 @@ export const NewsSection = () => {
                       variant="ghost" 
                       size="sm" 
                       className="text-primary hover:text-primary-glow"
-                      onClick={() => article.url && window.open(article.url, '_blank')}
+                      onClick={() => article.url && (window.location.href = article.url)}
                     >
                       Read More
                     </Button>
