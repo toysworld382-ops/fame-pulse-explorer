@@ -30,12 +30,14 @@ serve(async (req) => {
     
     // Transform TMDB data to match our MovieCard component props
     const transformedMovies = data.results.slice(0, 6).map((item: any) => ({
+      id: item.id,
       title: item.title || item.name,
       year: new Date(item.release_date || item.first_air_date || '').getFullYear().toString(),
       rating: item.vote_average,
       genre: item.media_type === 'movie' ? 'Movie' : 'TV Series',
       image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-      language: item.original_language.toUpperCase()
+      language: item.original_language.toUpperCase(),
+      media_type: item.media_type
     }));
 
     return new Response(JSON.stringify({ movies: transformedMovies }), {

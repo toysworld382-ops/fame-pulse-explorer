@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.get-entertainment-news]
 verify_jwt = false
+
+[functions.get-movie-details]
+verify_jwt = false

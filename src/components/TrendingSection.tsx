@@ -5,12 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
 interface Movie {
+  id: number;
   title: string;
   year: string;
   rating: number;
   genre: string;
   image: string;
   language: string;
+  media_type: string;
 }
 
 export const TrendingSection = () => {
@@ -72,12 +74,14 @@ export const TrendingSection = () => {
             movies.map((movie, index) => (
               <MovieCard
                 key={index}
+                id={movie.id}
                 title={movie.title}
                 year={movie.year}
                 rating={movie.rating}
                 genre={movie.genre}
                 image={movie.image}
                 language={movie.language}
+                media_type={movie.media_type}
               />
             ))
           )}

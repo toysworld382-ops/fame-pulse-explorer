@@ -1,8 +1,10 @@
 import { Star, Play, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {
+  id?: number;
   title: string;
   year: string;
   rating: number;
@@ -10,11 +12,23 @@ interface MovieCardProps {
   image: string;
   language: string;
   isLarge?: boolean;
+  media_type?: string;
 }
 
-export const MovieCard = ({ title, year, rating, genre, image, language, isLarge = false }: MovieCardProps) => {
+export const MovieCard = ({ id, title, year, rating, genre, image, language, isLarge = false, media_type }: MovieCardProps) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    if (id) {
+      const mediaType = media_type || (genre === 'TV Series' ? 'tv' : 'movie');
+      navigate(`/details/${mediaType}/${id}`);
+    }
+  };
   return (
-    <Card className={`group relative overflow-hidden bg-gradient-to-b from-card to-card/80 border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:scale-105 ${isLarge ? 'aspect-[2/3] h-80' : 'aspect-[2/3] h-64'}`}>
+    <Card 
+      className={`group relative overflow-hidden bg-gradient-to-b from-card to-card/80 border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:scale-105 cursor-pointer ${isLarge ? 'aspect-[2/3] h-80' : 'aspect-[2/3] h-64'}`}
+      onClick={handleCardClick}
+    >
       {/* Movie Poster */}
       <div className="relative h-full overflow-hidden">
         <img 
