@@ -40,10 +40,18 @@ export const MovieCard = ({ title, year, rating, genre, image, language, isLarge
         {/* Hover Actions */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="flex space-x-2">
-            <Button variant="hero" size="sm">
+            <Button 
+              variant="hero" 
+              size="sm"
+              onClick={() => alert(`Playing ${title}...`)}
+            >
               <Play className="w-4 h-4" />
             </Button>
-            <Button variant="glass" size="sm">
+            <Button 
+              variant="glass" 
+              size="sm"
+              onClick={() => alert(`Added ${title} to watchlist!`)}
+            >
               <Plus className="w-4 h-4" />
             </Button>
           </div>

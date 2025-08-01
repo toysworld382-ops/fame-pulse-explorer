@@ -29,25 +29,50 @@ export const Header = () => {
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Button variant="ghost" className="text-foreground hover:text-primary">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             Home
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary"
+            onClick={() => document.querySelector('[data-section="trending"]')?.scrollIntoView({ behavior: 'smooth' })}
+          >
             Movies
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary"
+            onClick={() => alert('Series section coming soon!')}
+          >
             Series
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary"
+            onClick={() => document.querySelector('[data-section="news"]')?.scrollIntoView({ behavior: 'smooth' })}
+          >
             News
           </Button>
-          <Button variant="hero" size="sm">
+          <Button 
+            variant="hero" 
+            size="sm"
+            onClick={() => alert('Sign in feature coming soon!')}
+          >
             Sign In
           </Button>
         </nav>
 
         {/* Mobile Menu */}
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden"
+          onClick={() => alert('Mobile menu coming soon!')}
+        >
           <Menu className="w-5 h-5" />
         </Button>
       </div>

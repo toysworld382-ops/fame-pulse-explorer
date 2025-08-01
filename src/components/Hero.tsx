@@ -35,11 +35,24 @@ export const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button variant="hero" size="lg" className="group">
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="group"
+              onClick={() => {
+                document.querySelector('section:nth-of-type(2)')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
               <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               Start Exploring
             </Button>
-            <Button variant="glass" size="lg">
+            <Button 
+              variant="glass" 
+              size="lg"
+              onClick={() => {
+                alert('Watchlist feature coming soon!');
+              }}
+            >
               <Plus className="w-5 h-5 mr-2" />
               Create Watchlist
             </Button>

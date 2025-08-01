@@ -39,7 +39,7 @@ export const TrendingSection = () => {
   }, []);
 
   return (
-    <section className="py-12 px-4">
+    <section className="py-12 px-4" data-section="trending">
       <div className="container">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">

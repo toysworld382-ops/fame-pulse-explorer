@@ -40,7 +40,7 @@ export const NewsSection = () => {
   }, []);
 
   return (
-    <section className="py-12 px-4 bg-muted/30">
+    <section className="py-12 px-4 bg-muted/30" data-section="news">
       <div className="container">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
