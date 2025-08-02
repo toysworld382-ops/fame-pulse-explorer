@@ -26,9 +26,9 @@ serve(async (req) => {
       throw new Error('Movie ID is required');
     }
 
-    // Fetch main details
+    // Fetch main details with all cast and recommended movies
     const detailsResponse = await fetch(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}?api_key=${tmdbApiKey}&append_to_response=credits,videos,similar,reviews`
+      `https://api.themoviedb.org/3/${mediaType}/${movieId}?api_key=${tmdbApiKey}&append_to_response=credits,videos,similar,recommendations,reviews`
     );
 
     if (!detailsResponse.ok) {
@@ -67,8 +67,8 @@ serve(async (req) => {
       in_production: details.in_production,
       networks: details.networks?.map((n: any) => n.name) || [],
       
-      // Cast and Crew
-      cast: details.credits?.cast?.slice(0, 10).map((person: any) => ({
+      // Cast and Crew (show all cast members)
+      cast: details.credits?.cast?.map((person: any) => ({
         id: person.id,
         name: person.name,
         character: person.character,
@@ -96,6 +96,16 @@ serve(async (req) => {
       
       // Similar movies/shows
       similar: details.similar?.results?.slice(0, 6).map((item: any) => ({
+        id: item.id,
+        title: item.title || item.name,
+        poster_path: item.poster_path ? `https://image.tmdb.org/t/p/w300${item.poster_path}` : null,
+        release_date: item.release_date || item.first_air_date,
+        vote_average: item.vote_average,
+        media_type: mediaType,
+      })) || [],
+      
+      // Recommended movies/shows
+      recommended: details.recommendations?.results?.slice(0, 6).map((item: any) => ({
         id: item.id,
         title: item.title || item.name,
         poster_path: item.poster_path ? `https://image.tmdb.org/t/p/w300${item.poster_path}` : null,

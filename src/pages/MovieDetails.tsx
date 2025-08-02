@@ -61,6 +61,14 @@ interface MovieDetails {
     vote_average: number;
     media_type: string;
   }>;
+  recommended?: Array<{
+    id: number;
+    title: string;
+    poster_path: string | null;
+    release_date: string;
+    vote_average: number;
+    media_type: string;
+  }>;
   reviews: Array<{
     id: string;
     author: string;
@@ -152,16 +160,26 @@ const MovieDetails = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Section with Backdrop */}
+      {/* Hero Section with Auto-playing Trailer */}
       <div className="relative">
-        {details.backdrop_path && (
+        {details.videos.length > 0 ? (
+          <div className="h-[60vh] relative bg-black">
+            <iframe
+              src={`https://www.youtube.com/embed/${details.videos[0].key}?autoplay=1&mute=1&loop=1&playlist=${details.videos[0].key}&controls=0&showinfo=0&rel=0&modestbranding=1`}
+              className="w-full h-full object-cover"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          </div>
+        ) : details.backdrop_path ? (
           <div 
             className="h-[60vh] bg-cover bg-center relative"
             style={{ backgroundImage: `url(${details.backdrop_path})` }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
           </div>
-        )}
+        ) : null}
         
         <div className="container mx-auto px-4 py-8 relative">
           <Button 
@@ -230,7 +248,12 @@ const MovieDetails = () => {
               {/* Genres */}
               <div className="flex flex-wrap gap-2">
                 {details.genres.map((genre) => (
-                  <Badge key={genre} variant="secondary">
+                  <Badge 
+                    key={genre} 
+                    variant="secondary" 
+                    className="cursor-pointer hover:bg-primary/20"
+                    onClick={() => navigate(`/genre/${encodeURIComponent(genre)}`)}
+                  >
                     {genre}
                   </Badge>
                 ))}
@@ -296,7 +319,11 @@ const MovieDetails = () => {
           <h2 className="text-2xl font-semibold mb-6">Cast</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {details.cast.map((person) => (
-              <Card key={person.id} className="overflow-hidden">
+              <Card 
+                key={person.id} 
+                className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate(`/person/${person.id}`)}
+              >
                 <CardContent className="p-0">
                   {person.profile_path ? (
                     <img
@@ -394,6 +421,45 @@ const MovieDetails = () => {
           <h2 className="text-2xl font-semibold mb-6">Similar {details.media_type === 'tv' ? 'Shows' : 'Movies'}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {details.similar.map((item) => (
+              <Card 
+                key={item.id} 
+                className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate(`/details/${item.media_type}/${item.id}`)}
+              >
+                <CardContent className="p-0">
+                  {item.poster_path ? (
+                    <img
+                      src={item.poster_path}
+                      alt={item.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-muted flex items-center justify-center">
+                      <div className="text-center p-4">
+                        <h3 className="font-medium text-sm">{item.title}</h3>
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-3">
+                    <h3 className="font-medium text-sm truncate">{item.title}</h3>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-xs">{item.vote_average.toFixed(1)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recommended Movies/Shows */}
+      {details.recommended && details.recommended.length > 0 && (
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-2xl font-semibold mb-6">Recommended for You</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {details.recommended.map((item) => (
               <Card 
                 key={item.id} 
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
