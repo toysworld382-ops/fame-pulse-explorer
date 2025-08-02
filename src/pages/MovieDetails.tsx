@@ -83,6 +83,9 @@ const MovieDetails = () => {
   const navigate = useNavigate();
   const [details, setDetails] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [showMoreSimilar, setShowMoreSimilar] = useState(false);
+  const [showMoreRecommended, setShowMoreRecommended] = useState(false);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -165,12 +168,39 @@ const MovieDetails = () => {
         {details.videos.length > 0 ? (
           <div className="h-[60vh] relative bg-black">
             <iframe
-              src={`https://www.youtube.com/embed/${details.videos[0].key}?autoplay=1&mute=1&loop=1&playlist=${details.videos[0].key}&controls=0&showinfo=0&rel=0&modestbranding=1`}
+              id="hero-trailer"
+              src={`https://www.youtube.com/embed/${details.videos[0].key}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${details.videos[0].key}&controls=1&showinfo=0&rel=0&modestbranding=1&enablejsapi=1`}
               className="w-full h-full object-cover"
               allow="autoplay; encrypted-media"
               allowFullScreen
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent pointer-events-none" />
+            
+            {/* Unmute Button */}
+            <div className="absolute top-4 right-4 z-10">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsMuted(!isMuted)}
+                className="bg-black/50 hover:bg-black/70 text-white border-white/20"
+              >
+                {isMuted ? (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.76L4.846 13.5H2a1 1 0 01-1-1v-5a1 1 0 011-1h2.846l3.537-3.26a1 1 0 011-.164zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    Unmute
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.76L4.846 13.5H2a1 1 0 01-1-1v-5a1 1 0 011-1h2.846l3.537-3.26a1 1 0 011-.164zm7.04 0l1.06 1.061A7.002 7.002 0 0118 10c0 2.137-.95 4.054-2.458 5.365l-1.061-1.06A5.001 5.001 0 0016 10c0-1.565-.717-2.96-1.84-3.87l1.06-1.06zm-2.121 2.121L15.364 6.26A2.999 2.999 0 0116 8.5c0 .823-.333 1.57-.871 2.11l-1.06-1.06A1 1 0 0015 8.5a1 1 0 00-.293-.707l-1.061-1.06z" clipRule="evenodd" />
+                    </svg>
+                    Mute
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         ) : details.backdrop_path ? (
           <div 
@@ -285,22 +315,51 @@ const MovieDetails = () => {
                 </p>
               </div>
 
+              {/* Watch Options */}
+              <div className="flex flex-wrap gap-3 mb-6">
+                <Button className="bg-red-600 hover:bg-red-700 text-white">
+                  <Play className="h-4 w-4 mr-2" />
+                  Watch Now
+                </Button>
+                <Button variant="outline">
+                  <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                  </svg>
+                  Add to Watchlist
+                </Button>
+                <Button variant="outline">
+                  <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                  Favorite
+                </Button>
+              </div>
+
               {/* Trailers */}
               {details.videos.length > 0 && (
                 <div>
-                  <h2 className="text-2xl font-semibold mb-3">Trailers</h2>
+                  <h2 className="text-2xl font-semibold mb-3">Trailers & Videos</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {details.videos.map((video) => (
-                      <Card key={video.id} className="cursor-pointer hover:shadow-lg transition-shadow">
+                      <Card 
+                        key={video.id} 
+                        className="cursor-pointer hover:shadow-lg transition-shadow"
+                        onClick={() => window.open(`https://www.youtube.com/watch?v=${video.key}`, '_blank')}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="bg-primary/10 p-2 rounded-full">
                               <Play className="h-5 w-5 text-primary" />
                             </div>
-                            <div>
+                            <div className="flex-1">
                               <h3 className="font-medium">{video.name}</h3>
                               <p className="text-sm text-muted-foreground">{video.type}</p>
                             </div>
+                            <Button size="sm" variant="ghost">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                              </svg>
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
@@ -418,9 +477,17 @@ const MovieDetails = () => {
       {/* Similar Movies/Shows */}
       {details.similar.length > 0 && (
         <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-semibold mb-6">Similar {details.media_type === 'tv' ? 'Shows' : 'Movies'}</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold">Similar {details.media_type === 'tv' ? 'Shows' : 'Movies'}</h2>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowMoreSimilar(!showMoreSimilar)}
+            >
+              {showMoreSimilar ? 'Show Less' : 'Show More'}
+            </Button>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {details.similar.map((item) => (
+            {(showMoreSimilar ? details.similar : details.similar.slice(0, 12)).map((item) => (
               <Card 
                 key={item.id} 
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
@@ -457,9 +524,17 @@ const MovieDetails = () => {
       {/* Recommended Movies/Shows */}
       {details.recommended && details.recommended.length > 0 && (
         <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-semibold mb-6">Recommended for You</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold">Recommended for You</h2>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowMoreRecommended(!showMoreRecommended)}
+            >
+              {showMoreRecommended ? 'Show Less' : 'Show More'}
+            </Button>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {details.recommended.map((item) => (
+            {(showMoreRecommended ? details.recommended : details.recommended.slice(0, 12)).map((item) => (
               <Card 
                 key={item.id} 
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
