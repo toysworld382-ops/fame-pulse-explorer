@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Play, Star, Calendar, Clock, Globe, Users, Award } from "lucide-react";
+import { ArrowLeft, Play, Star, Calendar, Clock, Globe, Users, Award, X, Volume2, VolumeX, ExternalLink } from "lucide-react";
+import { Helmet } from "react-helmet";
 
 interface MovieDetails {
   id: number;
@@ -86,6 +87,9 @@ const MovieDetails = () => {
   const [isMuted, setIsMuted] = useState(true);
   const [showMoreSimilar, setShowMoreSimilar] = useState(false);
   const [showMoreRecommended, setShowMoreRecommended] = useState(false);
+  const [showTrailerModal, setShowTrailerModal] = useState(false);
+  const [selectedTrailer, setSelectedTrailer] = useState<string>('');
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -159,8 +163,57 @@ const MovieDetails = () => {
     }).format(amount);
   };
 
+  const openTrailerModal = (trailerKey: string) => {
+    setSelectedTrailer(trailerKey);
+    setShowTrailerModal(true);
+  };
+
+  const closeTrailerModal = () => {
+    setShowTrailerModal(false);
+    setSelectedTrailer('');
+  };
+
+  const watchOptions = [
+    { name: 'Netflix', url: `https://www.netflix.com/search?q=${encodeURIComponent(details?.title || '')}`, icon: '🎬' },
+    { name: 'Prime Video', url: `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${encodeURIComponent(details?.title || '')}`, icon: '📺' },
+    { name: 'Disney+', url: `https://www.disneyplus.com/search?q=${encodeURIComponent(details?.title || '')}`, icon: '🏰' },
+    { name: 'Hulu', url: `https://www.hulu.com/search?q=${encodeURIComponent(details?.title || '')}`, icon: '🌊' },
+    { name: 'HBO Max', url: `https://www.hbomax.com/search?q=${encodeURIComponent(details?.title || '')}`, icon: '👑' },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{details?.title ? `${details.title} (${new Date(details.release_date).getFullYear()}) - Movie Details` : 'Movie Details'}</title>
+        <meta name="description" content={details?.overview || 'Watch movies and TV shows online'} />
+        <meta name="keywords" content={`${details?.title}, ${details?.genres?.join(', ')}, movie, watch online, streaming`} />
+        <meta property="og:title" content={details?.title} />
+        <meta property="og:description" content={details?.overview} />
+        <meta property="og:image" content={details?.poster_path} />
+        <meta property="og:type" content="video.movie" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={details?.title} />
+        <meta name="twitter:description" content={details?.overview} />
+        <meta name="twitter:image" content={details?.poster_path} />
+      </Helmet>
+      
+      {/* Advertisement Banner - Only show if not premium */}
+      {!isPremium && (
+        <div className="bg-gradient-to-r from-primary to-secondary p-4 text-center text-white">
+          <p className="text-sm">
+            🎬 Enjoy ad-free experience! 
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="ml-2 bg-white text-primary hover:bg-gray-100"
+              onClick={() => setIsPremium(true)}
+            >
+              Go Premium - $9.99/month
+            </Button>
+          </p>
+        </div>
+      )}
+      
       <Header />
       
       {/* Hero Section with Auto-playing Trailer */}
@@ -174,7 +227,7 @@ const MovieDetails = () => {
               allow="autoplay; encrypted-media"
               allowFullScreen
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent pointer-events-none" />
+            <div className={`absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent pointer-events-none transition-opacity duration-300 ${isMuted ? 'opacity-60' : 'opacity-30'}`} />
             
             {/* Unmute Button */}
             <div className="absolute top-4 right-4 z-10">
@@ -186,16 +239,12 @@ const MovieDetails = () => {
               >
                 {isMuted ? (
                   <>
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.76L4.846 13.5H2a1 1 0 01-1-1v-5a1 1 0 011-1h2.846l3.537-3.26a1 1 0 011-.164zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
+                    <VolumeX className="w-4 h-4 mr-2" />
                     Unmute
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.76L4.846 13.5H2a1 1 0 01-1-1v-5a1 1 0 011-1h2.846l3.537-3.26a1 1 0 011-.164zm7.04 0l1.06 1.061A7.002 7.002 0 0118 10c0 2.137-.95 4.054-2.458 5.365l-1.061-1.06A5.001 5.001 0 0016 10c0-1.565-.717-2.96-1.84-3.87l1.06-1.06zm-2.121 2.121L15.364 6.26A2.999 2.999 0 0116 8.5c0 .823-.333 1.57-.871 2.11l-1.06-1.06A1 1 0 0015 8.5a1 1 0 00-.293-.707l-1.061-1.06z" clipRule="evenodd" />
-                    </svg>
+                    <Volume2 className="w-4 h-4 mr-2" />
                     Mute
                   </>
                 )}
@@ -316,23 +365,37 @@ const MovieDetails = () => {
               </div>
 
               {/* Watch Options */}
-              <div className="flex flex-wrap gap-3 mb-6">
-                <Button className="bg-red-600 hover:bg-red-700 text-white">
-                  <Play className="h-4 w-4 mr-2" />
-                  Watch Now
-                </Button>
-                <Button variant="outline">
-                  <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                  </svg>
-                  Add to Watchlist
-                </Button>
-                <Button variant="outline">
-                  <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                  </svg>
-                  Favorite
-                </Button>
+              <div className="space-y-4 mb-6">
+                <h3 className="text-lg font-semibold">Watch Now</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {watchOptions.map((option) => (
+                    <Button
+                      key={option.name}
+                      variant="outline"
+                      className="h-auto p-3 flex flex-col items-center gap-2"
+                      onClick={() => window.open(option.url, '_blank')}
+                    >
+                      <span className="text-2xl">{option.icon}</span>
+                      <span className="text-xs">{option.name}</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  ))}
+                </div>
+                
+                <div className="flex flex-wrap gap-3">
+                  <Button variant="outline">
+                    <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                    </svg>
+                    Add to Watchlist
+                  </Button>
+                  <Button variant="outline">
+                    <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                    </svg>
+                    Favorite
+                  </Button>
+                </div>
               </div>
 
               {/* Trailers */}
@@ -344,7 +407,7 @@ const MovieDetails = () => {
                       <Card 
                         key={video.id} 
                         className="cursor-pointer hover:shadow-lg transition-shadow"
-                        onClick={() => window.open(`https://www.youtube.com/watch?v=${video.key}`, '_blank')}
+                        onClick={() => openTrailerModal(video.key)}
                       >
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3">
@@ -594,6 +657,46 @@ const MovieDetails = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Trailer Modal */}
+      {showTrailerModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="relative w-[90vw] h-[90vh] max-w-6xl">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute -top-12 right-0 text-white hover:text-gray-300"
+              onClick={closeTrailerModal}
+            >
+              <X className="h-6 w-6" />
+              Close
+            </Button>
+            <iframe
+              src={`https://www.youtube.com/embed/${selectedTrailer}?autoplay=1&controls=1&showinfo=0&rel=0&modestbranding=1`}
+              className="w-full h-full rounded-lg"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Advertisement Section - Only show if not premium */}
+      {!isPremium && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 text-center text-white">
+            <h3 className="text-xl font-bold mb-2">🎬 Movie Streaming Platform</h3>
+            <p className="mb-4">Get unlimited access to thousands of movies and shows!</p>
+            <Button 
+              variant="outline" 
+              className="bg-white text-blue-600 hover:bg-gray-100"
+              onClick={() => setIsPremium(true)}
+            >
+              Start Free Trial
+            </Button>
           </div>
         </div>
       )}
