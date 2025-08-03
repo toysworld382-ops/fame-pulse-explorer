@@ -13,9 +13,10 @@ interface MovieCardProps {
   language: string;
   isLarge?: boolean;
   media_type?: string;
+  className?: string;
 }
 
-export const MovieCard = ({ id, title, year, rating, genre, image, language, isLarge = false, media_type }: MovieCardProps) => {
+export const MovieCard = ({ id, title, year, rating, genre, image, language, isLarge = false, media_type, className }: MovieCardProps) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -26,7 +27,7 @@ export const MovieCard = ({ id, title, year, rating, genre, image, language, isL
   };
   return (
     <Card 
-      className={`group relative overflow-hidden bg-gradient-to-b from-card to-card/80 border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:scale-105 cursor-pointer ${isLarge ? 'aspect-[2/3] h-80' : 'aspect-[2/3] h-64'}`}
+      className={`group relative overflow-hidden bg-gradient-to-b from-card to-card/80 border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:scale-105 cursor-pointer ${isLarge ? 'aspect-[2/3] h-80' : 'aspect-[2/3] h-64'} ${className || ''}`}
       onClick={handleCardClick}
     >
       {/* Movie Poster */}

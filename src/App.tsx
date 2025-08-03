@@ -7,6 +7,10 @@ import Index from "./pages/Index";
 import MovieDetails from "./pages/MovieDetails";
 import PersonDetails from "./pages/PersonDetails";
 import GenreDetails from "./pages/GenreDetails";
+import DiscoverMovies from "./pages/DiscoverMovies";
+import DiscoverSeries from "./pages/DiscoverSeries";
+import Celebrities from "./pages/Celebrities";
+import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +26,10 @@ const App = () => (
           <Route path="/details/:type/:id" element={<MovieDetails />} />
           <Route path="/person/:id" element={<PersonDetails />} />
           <Route path="/genre/:genre" element={<GenreDetails />} />
+          <Route path="/discover/movies" element={<DiscoverMovies />} />
+          <Route path="/discover/series" element={<DiscoverSeries />} />
+          <Route path="/celebrities" element={<Celebrities />} />
+          <Route path="/news" element={<News />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

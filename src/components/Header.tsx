@@ -1,9 +1,17 @@
-import { Search, Star, Menu } from "lucide-react";
+import { Search, Star, Menu, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { SubscriptionModal } from "./SubscriptionModal";
 
 export const Header = () => {
+  const [subscriptionOpen, setSubscriptionOpen] = useState(false);
+  const navigate = useNavigate();
+
   return (
+    <>
+      <SubscriptionModal open={subscriptionOpen} onOpenChange={setSubscriptionOpen} />
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
@@ -28,41 +36,50 @@ export const Header = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-4">
           <Button 
             variant="ghost" 
             className="text-foreground hover:text-primary"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => navigate('/')}
           >
             Home
           </Button>
           <Button 
             variant="ghost" 
             className="text-foreground hover:text-primary"
-            onClick={() => document.querySelector('[data-section="trending"]')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => navigate('/discover/movies')}
           >
             Movies
           </Button>
           <Button 
             variant="ghost" 
             className="text-foreground hover:text-primary"
-            onClick={() => alert('Series section coming soon!')}
+            onClick={() => navigate('/discover/series')}
           >
             Series
           </Button>
           <Button 
             variant="ghost" 
             className="text-foreground hover:text-primary"
-            onClick={() => document.querySelector('[data-section="news"]')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => navigate('/celebrities')}
+          >
+            Celebrities
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary"
+            onClick={() => navigate('/news')}
           >
             News
           </Button>
           <Button 
-            variant="hero" 
+            variant="premium" 
             size="sm"
-            onClick={() => alert('Sign in feature coming soon!')}
+            onClick={() => setSubscriptionOpen(true)}
+            className="group"
           >
-            Sign In
+            <Crown className="w-4 h-4 mr-1 group-hover:scale-110 transition-transform" />
+            Premium
           </Button>
         </nav>
 
@@ -77,5 +94,6 @@ export const Header = () => {
         </Button>
       </div>
     </header>
+    </>
   );
 };
